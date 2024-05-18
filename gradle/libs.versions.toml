@@ -1,11 +1,26 @@
 [versions]
-minecraft = "1.20.1"
-quilt_mappings = "1.20.1+build.1"
-quilt_loader = "0.19.1"
+fabric_loom = "1.6-SNAPSHOT"
+neoforge_gradle = "7.0.129"
+neoforge_mdk = "[20.6,)"
+minotaur = "2.+"
+
+minecraft = "1.20.6"
+fabric_loader = "0.15.10"
+fabric_api = "0.97.8"
+
+mixin = "0.8.5"
+
+midnightlib = "1.5.3"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
-quilt_loader = { module = "org.quiltmc:quilt-loader", version.ref = "quilt_loader" }
+fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_loader" }
+night_config = { module = "com.electronwill.night-config:toml", version = "3.6.0" }
+
+mixin = { module = "org.spongepowered:mixin", version.ref = "mixin" }
 
 [plugins]
-quilt_loom = { id = "org.quiltmc.loom", version = "1.2.+" }
+fabric_loom = { id = "fabric-loom", version.ref = "fabric_loom" }
+neoforge_gradle = { id = "net.neoforged.gradle.userdev", version.ref = "neoforge_gradle" }
+minotaur = { id = "com.modrinth.minotaur", version.ref = "minotaur" }
+

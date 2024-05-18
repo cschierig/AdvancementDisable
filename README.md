@@ -11,3 +11,7 @@ disabledMods = [
     "minecraft" # remove all minecraft advancements
 ]
 ```
+
+## Dependencies
+
+Bundles [night-config](https://github.com/TheElectronWill/night-config)

@@ -1,0 +1,17 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+
+license = "LGPL-3.0"
+issueTrackerURL = "https://github.com/cschierig/AdvancementDisable"
+showAsResourcePack = false
+
+[[mods]]
+modId = "advancementdisable"
+version = "0.3.0"
+displayName = "Advancement Disable"
+authors = "CozyPenguin"
+logoFile = "assets/advancementdisable/icon.png"
+description = "Disable mod advancements."
+
+[[mixins]]
+config = "advancementdisable.mixins.json"

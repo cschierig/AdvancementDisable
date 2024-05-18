@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "advancementdisable",
+  "version": "${version}",
+  "name": "Advancement Disable",
+  "description": "Disable mod advancements.",
+  "authors": [
+    "CozyPenguin"
+  ],
+  "contact": {
+    "sources": "https://github.com/cschierig/AdvancementDisable"
+  },
+  "license": "LGPL-3.0",
+  "icon": "assets/advancementdisable/icon.png",
+  "environment": "*",
+  "mixins": [
+    "advancementdisable.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.10",
+    "minecraft": "~1.20.6",
+    "java": ">=21"
+  }
+}
