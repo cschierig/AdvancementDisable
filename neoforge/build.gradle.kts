@@ -51,7 +51,7 @@ if (System.getenv("MODRINTH_TOKEN") != null) {
         projectId.set("advancementdisable")
         versionNumber.set(project.version.toString())
         versionName.set(project.version.toString() + " - " + project.name.uppercaseFirstChar())
-        uploadFile.set(tasks.named<Jar>("jar"))
+        uploadFile.set(tasks.named<Jar>("jarJar"))
         syncBodyFrom.set(rootProject.file("README.md").readText())
         gameVersions.set(listOf(libs.versions.minecraft.get()))
         loaders.set(listOf("neoforge"))
