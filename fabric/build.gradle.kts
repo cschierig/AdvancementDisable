@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import net.fabricmc.loom.task.RemapJarTask
 import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 
 plugins {
@@ -6,6 +8,7 @@ plugins {
     `maven-publish`
     alias(libs.plugins.fabric.loom)
     alias(libs.plugins.minotaur)
+    alias(libs.plugins.shadow)
 }
 
 val modId: String by project
@@ -19,7 +22,7 @@ dependencies {
 
     modImplementation(libs.fabric.loader)
 
-    include(libs.night.config)
+    shadow(libs.night.config)
     implementation(libs.night.config)
 
     implementation(project(":common"))
@@ -55,6 +58,17 @@ tasks.withType<JavaCompile> {
 
 tasks.withType<ProcessResources> {
     from(project(":common").sourceSets.main.get().resources)
+}
+
+tasks.named<ShadowJar>("shadowJar") {
+    configurations = listOf(project.configurations.shadow.get())
+    exclude("META-INF")
+}
+
+tasks.withType<RemapJarTask>() {
+    dependsOn(tasks.getByName("shadowJar"))
+    mustRunAfter(tasks.getByName("shadowJar"))
+    inputFile = tasks.getByName<ShadowJar>("shadowJar").archiveFile
 }
 
 if (System.getenv("MODRINTH_TOKEN") != null) {

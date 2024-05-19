@@ -5,6 +5,7 @@ import com.electronwill.nightconfig.core.file.FileConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,9 +19,11 @@ public class AdvancementDisable {
 
 	static {
 		var spec = new ConfigSpec();
-		spec.defineList(DISABLED_KEY, new ArrayList<String>() , (object) -> object instanceof String);
+		spec.defineList(DISABLED_KEY, new ArrayList<String>(), (object) -> object instanceof String);
 
+		new File("config/").mkdirs();
 		var config = FileConfig.of("config/" + MODID + ".toml");
+
 		config.load();
 
 		if (!spec.isCorrect(config)) {

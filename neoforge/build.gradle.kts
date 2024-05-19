@@ -11,13 +11,14 @@ plugins {
 val modId: String by project
 val recipeViewer: String by project
 
-jarJar.enable()
+//jarJar.enable()
 dependencies {
     implementation("net.neoforged:neoforge:${libs.versions.neoforge.mdk.get()}")
 
     compileOnly(project(":common"))
     implementation(libs.night.config)
-    jarJar(libs.night.config)
+    // unneeded as night-config ships with neoforge
+    //jarJar(libs.night.config)
 }
 
 // taken from sodium
@@ -51,7 +52,7 @@ if (System.getenv("MODRINTH_TOKEN") != null) {
         projectId.set("advancementdisable")
         versionNumber.set(project.version.toString())
         versionName.set(project.version.toString() + " - " + project.name.uppercaseFirstChar())
-        uploadFile.set(tasks.named<Jar>("jarJar"))
+        uploadFile.set(tasks.named<Jar>("jar"))
         syncBodyFrom.set(rootProject.file("README.md").readText())
         gameVersions.set(listOf(libs.versions.minecraft.get()))
         loaders.set(listOf("neoforge"))
