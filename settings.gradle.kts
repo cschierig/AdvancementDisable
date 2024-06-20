@@ -5,10 +5,14 @@ pluginManagement {
             name = "Fabric"
         }
         maven("https://maven.neoforged.net/releases") {
-            name = "Forge"
+            name = "Neoforge"
+        }
+        maven("https://maven.architectury.dev/") {
+            name = "Architectury"
         }
     }
 }
 
-rootProject.name = "AdvancementDisable"
+val modArchiveName: String by extra
+rootProject.name = modArchiveName
 include("common", "fabric", "neoforge")

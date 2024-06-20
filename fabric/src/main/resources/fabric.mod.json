@@ -1,24 +1,25 @@
 {
-  "schemaVersion": 1,
-  "id": "advancementdisable",
-  "version": "${version}",
-  "name": "Advancement Disable",
-  "description": "Disable mod advancements.",
-  "authors": [
-    "CozyPenguin"
-  ],
-  "contact": {
-    "sources": "https://github.com/cschierig/AdvancementDisable"
-  },
-  "license": "LGPL-3.0",
-  "icon": "assets/advancementdisable/icon.png",
-  "environment": "*",
-  "mixins": [
-    "advancementdisable.mixins.json"
-  ],
-  "depends": {
-    "fabricloader": ">=0.15.10",
-    "minecraft": "~1.20.6",
-    "java": ">=21"
-  }
+	"schemaVersion": 1,
+	"id": "${modId}",
+	"version": "${modVersion}",
+	"name": "${modName}",
+	"description": "${modDescription}",
+	"authors": [
+		"CozyPenguin"
+	],
+	"contact": {
+		"sources": "https://github.com/cschierig/AdvancementDisable",
+		"issues": "https://github.com/cschierig/AdvancementDisable/issues"
+	},
+	"license": "${modLicense}",
+	"icon": "assets/${modId}/icon.png",
+	"environment": "*",
+	"mixins": [
+		"${modId}.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.15.11",
+		"minecraft": "1.21.x",
+		"java": ">=21"
+	}
 }

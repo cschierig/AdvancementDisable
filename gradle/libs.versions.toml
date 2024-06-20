@@ -1,26 +1,39 @@
 [versions]
-fabric_loom = "1.6-SNAPSHOT"
-neoforge_gradle = "7.0.129"
-neoforge_mdk = "[20.6,)"
+minecraft = "1.21"
+
 minotaur = "2.+"
+parchment = "2024.05.01"
 
-minecraft = "1.20.6"
-fabric_loader = "0.15.10"
-fabric_api = "0.97.8"
+fabric_loader = "0.15.+"
+fabric_api = "0.100.3+1.21"
 
-mixin = "0.8.5"
+neoforge_mdk = "21.0.+"
 
-midnightlib = "1.5.3"
+architectury_loom = "1.6-SNAPSHOT"
+architectury_plugin = "3.4-SNAPSHOT"
+shadow = "8.1.1"
+
+junit = "5.10.+"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+
 fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_loader" }
+fabric_loader_junit = { module = "net.fabricmc:fabric-loader-junit", version.ref = "fabric_loader" }
+fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api" }
+
+neoforge_mdk = { module = "net.neoforged:neoforge", version.ref = "neoforge_mdk" }
+
+junit_jupiter_api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit_jupiter_engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+
+compat_modmenu_fabric = { module = "com.terraformersmc:modmenu", version = "11.0.0" }
+
 night_config = { module = "com.electronwill.night-config:toml", version = "3.6.0" }
 
-mixin = { module = "org.spongepowered:mixin", version.ref = "mixin" }
-
 [plugins]
-fabric_loom = { id = "fabric-loom", version.ref = "fabric_loom" }
-neoforge_gradle = { id = "net.neoforged.gradle.userdev", version.ref = "neoforge_gradle" }
 minotaur = { id = "com.modrinth.minotaur", version.ref = "minotaur" }
-shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
+
+architectury_loom = { id = "dev.architectury.loom", version.ref = "architectury_loom" }
+architectury_plugin = { id = "architectury-plugin", version.ref = "architectury_plugin" }
+shadow = { id = 'com.github.johnrengelman.shadow', version.ref = "shadow" }

@@ -1,7 +1,6 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "refmap": "${modId}.refmap.json",
   "package": "com.carlschierig.advancementdisable.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [

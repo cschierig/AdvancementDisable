@@ -1,59 +1,88 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import net.fabricmc.loom.task.RemapJarTask
 import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 
 plugins {
-    `java-library`
-    idea
-    `maven-publish`
-    alias(libs.plugins.neoforge.gradle)
+    alias(libs.plugins.shadow)
     alias(libs.plugins.minotaur)
 }
 
 val modId: String by project
-val recipeViewer: String by project
+val withSourcesJar = property("withSourcesJar").toString().toBoolean()
+val withApiJar = property("withApiJar").toString().toBoolean()
+val modrinthId: String by project
+val modrinthType: String by project
 
-//jarJar.enable()
+val commonProject = project(":common")
+
+architectury {
+    platformSetupLoomIde()
+    neoForge()
+}
+
+val common by configurations.creating
+val shadowBundle by configurations.creating
+configurations {
+    "common" {
+        isCanBeResolved = true
+        isCanBeConsumed = false
+    }
+
+    compileClasspath.get().extendsFrom(common)
+    runtimeClasspath.get().extendsFrom(common)
+    getByName("developmentNeoForge").extendsFrom(common)
+
+    "shadowBundle" {
+        isCanBeResolved = true
+        isCanBeConsumed = false
+    }
+}
+
+repositories {
+    maven("https://maven.neoforged.net/releases") {
+        name = "NeoForged"
+    }
+}
+
 dependencies {
-    implementation("net.neoforged:neoforge:${libs.versions.neoforge.mdk.get()}")
+    neoForge(libs.neoforge.mdk)
 
-    compileOnly(project(":common"))
+    common(project(":common", "namedElements")) { isTransitive = false }
+    shadowBundle(project(":common", "transformProductionNeoForge"))
+
     implementation(libs.night.config)
-    // unneeded as night-config ships with neoforge
-    //jarJar(libs.night.config)
 }
 
-// taken from sodium
-// NeoGradle compiles the game, but we don't want to add our common code to the game's code
-val notNeoTask: (Task) -> Boolean = { it: Task -> !it.name.startsWith("neo") && !it.name.startsWith("compileService") }
-
-tasks.withType<JavaCompile>().matching(notNeoTask).configureEach {
-    source(project(":common").sourceSets.main.get().allSource)
+tasks.getByName<ShadowJar>("shadowJar") {
+    configurations = listOf(shadowBundle)
+    archiveClassifier.set("dev-shadow")
 }
 
-tasks.withType<ProcessResources>().matching(notNeoTask).configureEach {
-    from(project(":common").sourceSets.main.get().resources)
-}
-
-minecraft {
-    val atFile = file("src/main/resources/META-INF/accesstransformer.cfg")
-    if (atFile.exists()) {
-        file(atFile)
-    }
-}
-
-runs {
-    configureEach {
-        modSource(project.sourceSets.main.get())
-    }
+tasks.withType<RemapJarTask>() {
+    inputFile.set(tasks.getByName<ShadowJar>("shadowJar").archiveFile)
+    dependsOn(tasks.getByName<ShadowJar>("shadowJar"))
 }
 
 if (System.getenv("MODRINTH_TOKEN") != null) {
+    val files = ArrayList<String>()
+    if (withSourcesJar) {
+        files.add("sourcesJar")
+    }
+    if (withApiJar) {
+        files.add("apiJar")
+    }
+
     modrinth {
         token.set(System.getenv("MODRINTH_TOKEN"))
-        projectId.set("advancementdisable")
+        projectId.set(modrinthId)
         versionNumber.set(project.version.toString())
         versionName.set(project.version.toString() + " - " + project.name.uppercaseFirstChar())
+        versionType.set(modrinthType)
         uploadFile.set(tasks.named<Jar>("jar"))
+        additionalFiles.set(files.map { tasks.named(it) })
         syncBodyFrom.set(rootProject.file("README.md").readText())
+        dependencies {
+        }
         gameVersions.set(listOf(libs.versions.minecraft.get()))
         loaders.set(listOf("neoforge"))
         detectLoaders.set(false)

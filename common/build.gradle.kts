@@ -1,34 +1,42 @@
-plugins {
-    idea
-    java
-    alias(libs.plugins.fabric.loom)
+val modId: String by project
+val enabledPlatforms: String by project
+
+architectury {
+    common(enabledPlatforms.split(','))
 }
 
-val modName: String by project
-val modId: String by project
-val author: String by project
-val version: String by project
+loom {
+    val awFile = file("src/commonAssets/resources/${modId}.accesswidener")
+    if (awFile.exists()) {
+        accessWidenerPath.set(awFile)
+    }
 
-tasks.forEach {
-    it.group = null
+    addRemapConfiguration("testModImplementation") {
+        targetConfigurationName.set("test")
+        onCompileClasspath = true
+        onRuntimeClasspath = true
+    }
 }
 
 dependencies {
-    minecraft(libs.minecraft)
-    mappings(loom.officialMojangMappings())
+    modImplementation(libs.fabric.loader)
 
-    compileOnly(libs.mixin)
+    "testModImplementation"(libs.fabric.loader)
+    testImplementation(libs.fabric.loader.junit)
 
     compileOnly(libs.night.config)
 }
 
-loom {
-    val awPath = file("src/main/resources/${modId}.accesswidener")
-    if (awPath.exists()) {
-        accessWidenerPath.set(awPath)
+sourceSets {
+    create("commonAssets") {
+        resources {
+            srcDir(file("src/commonAssets/generated"))
+            exclude("src/commonAssets/generated/.cache")
+        }
     }
+}
 
-    mixin {
-        defaultRefmapName.set("${modId}.refmap.json")
-    }
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
