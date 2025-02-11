@@ -1,10 +1,12 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
 import net.fabricmc.loom.task.RemapJarTask
 import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 
 plugins {
     alias(libs.plugins.shadow)
     alias(libs.plugins.minotaur)
+    alias(libs.plugins.curseforgegradle)
 }
 
 val modId: String by project
@@ -78,7 +80,7 @@ if (System.getenv("MODRINTH_TOKEN") != null) {
         versionNumber.set(project.version.toString())
         versionName.set(project.version.toString() + " - " + project.name.uppercaseFirstChar())
         versionType.set(modrinthType)
-        uploadFile.set(tasks.named<Jar>("jar"))
+        uploadFile.set(tasks.named("remapJar"))
         additionalFiles.set(files.map { tasks.named(it) })
         syncBodyFrom.set(rootProject.file("README.md").readText())
         dependencies {
@@ -87,5 +89,22 @@ if (System.getenv("MODRINTH_TOKEN") != null) {
         loaders.set(listOf("neoforge"))
         detectLoaders.set(false)
         changelog.set(file("../CHANGELOG.md").readText())
+    }
+}
+
+if (System.getenv("CURSEFORGE_TOKEN") != null) {
+    tasks.create<TaskPublishCurseForge>("curseforge") {
+        apiToken = System.getenv("CURSEFORGE_TOKEN")
+
+        upload(1055905, tasks.named("remapJar")) {
+            releaseType = modrinthType
+            gameVersions.clear()
+            addGameVersion(libs.versions.minecraft.get())
+            addModLoader("neoforge")
+            changelog = file("../CHANGELOG.md").readText()
+            changelogType = "markdown"
+        }
+
+        disableVersionDetection()
     }
 }

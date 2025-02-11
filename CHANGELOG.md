@@ -1,3 +1,1 @@
-## 0.4.0
-
-- 1.21
+- update bundled night config, fix error with night config 3.8.0

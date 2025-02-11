@@ -22,7 +22,7 @@ public class AdvancementDisable {
 		spec.defineList(DISABLED_KEY, new ArrayList<String>(), (object) -> object instanceof String);
 
 		new File("config/").mkdirs();
-		var config = FileConfig.of("config/" + MODID + ".toml");
+		var config = FileConfig.builder("config/" + MODID + ".toml").sync().build();
 
 		config.load();
 

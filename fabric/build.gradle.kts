@@ -1,10 +1,12 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
 import net.fabricmc.loom.task.RemapJarTask
 import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 
 plugins {
     alias(libs.plugins.shadow)
     alias(libs.plugins.minotaur)
+    alias(libs.plugins.curseforgegradle)
 }
 
 val modId: String by project
@@ -172,7 +174,6 @@ if (System.getenv("MODRINTH_TOKEN") != null) {
         additionalFiles.set(files.map { tasks.named(it) })
         syncBodyFrom.set(rootProject.file("README.md").readText())
         dependencies {
-            // required.project("fabric-api")
         }
         gameVersions.set(listOf(libs.versions.minecraft.get()))
         loaders.set(listOf("fabric", "quilt"))
@@ -180,4 +181,21 @@ if (System.getenv("MODRINTH_TOKEN") != null) {
         changelog.set(file("../CHANGELOG.md").readText())
     }
     tasks.named("modrinth") { dependsOn("runDatagen") }
+}
+
+if (System.getenv("CURSEFORGE_TOKEN") != null) {
+    tasks.create<TaskPublishCurseForge>("curseforge") {
+        apiToken = System.getenv("CURSEFORGE_TOKEN")
+
+        upload(1055905, tasks.named("remapJar")) {
+            releaseType = modrinthType
+            gameVersions.clear()
+            addGameVersion(libs.versions.minecraft.get())
+            addModLoader("fabric", "quilt")
+            changelog = file("../CHANGELOG.md").readText()
+            changelogType = "markdown"
+        }
+
+        disableVersionDetection()
+    }
 }
