@@ -1,16 +1,16 @@
 [versions]
-minecraft = "1.21"
+minecraft = "1.21.4"
 
 minotaur = "2.+"
 curseforgegradle = "1.1.+"
-parchment = "2024.05.01"
+parchment = "2025.01.19"
 
 fabric_loader = "0.15.+"
-fabric_api = "0.100.3+1.21"
+fabric_api = "0.116.0+1.21.4"
 
-neoforge_mdk = "21.0.+"
+neoforge_mdk = "21.4.+"
 
-architectury_loom = "1.6-SNAPSHOT"
+architectury_loom = "1.9-SNAPSHOT"
 architectury_plugin = "3.4-SNAPSHOT"
 shadow = "8.1.1"
 
@@ -30,7 +30,7 @@ junit_jupiter_engine = { module = "org.junit.jupiter:junit-jupiter-engine", vers
 
 compat_modmenu_fabric = { module = "com.terraformersmc:modmenu", version = "11.0.0" }
 
-night_config = { module = "com.electronwill.night-config:toml", version = "3.8.0" }
+night_config = { module = "com.electronwill.night-config:toml", version = "3.8.1" }
 
 [plugins]
 minotaur = { id = "com.modrinth.minotaur", version.ref = "minotaur" }
