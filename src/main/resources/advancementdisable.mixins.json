@@ -3,6 +3,7 @@
 	"minVersion": "0.8",
 	"package": "com.carlschierig.advancementdisable.mixin",
 	"compatibilityLevel": "JAVA_17",
+  "refmap": "advancementdisable.refmap.json",
 	"mixins": [
     "AdvancementManagerMixin"
   ],

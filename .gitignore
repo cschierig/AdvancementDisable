@@ -8,6 +8,9 @@ classes/
 remappedSrc/
 run/
 
+# Forge Gradle
+run-data/
+
 # Eclipse
 *.launch
 
