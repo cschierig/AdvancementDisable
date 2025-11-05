@@ -20,7 +20,7 @@ public class AdvancementManagerMixin {
 	)
 	void preventAdvancementAddition(AdvancementList list, Map<ResourceLocation, Advancement.Builder> map) {
 		// TODO: use a set to avoid O(n) lookups
-		var disabledMods = Config.INSTANCE.getDisabledMods();
+		var disabledMods = Config.namespaces;
 		map.entrySet().removeIf(entry -> disabledMods.contains(entry.getKey().getNamespace()));
 		list.add(map);
 	}
