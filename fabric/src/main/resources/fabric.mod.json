@@ -18,8 +18,8 @@
 		"${modId}.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.15.11",
-		"minecraft": "1.21.x",
-		"java": ">=21"
+		"fabricloader": ">=${version_fabricloader}",
+		"minecraft": ">=${version_minecraft}",
+		"java": ">=${version_java}"
 	}
 }

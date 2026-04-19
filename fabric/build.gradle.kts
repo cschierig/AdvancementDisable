@@ -1,9 +1,10 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
-import net.fabricmc.loom.task.RemapJarTask
 import org.gradle.kotlin.dsl.support.uppercaseFirstChar
 
 plugins {
+    id("multiloader-loader")
+    alias(libs.plugins.fabric.loom)
     alias(libs.plugins.shadow)
     alias(libs.plugins.minotaur)
     alias(libs.plugins.curseforgegradle)
@@ -20,23 +21,8 @@ val withExampleMod = property("withExampleMod").toString().toBoolean()
 
 val commonProject = project(":common")
 
-architectury {
-    platformSetupLoomIde()
-    fabric()
-}
-
-val common by configurations.creating
 val shadowBundle by configurations.creating
 configurations {
-    "common" {
-        isCanBeResolved = true
-        isCanBeConsumed = false
-    }
-
-    compileClasspath.get().extendsFrom(common)
-    runtimeClasspath.get().extendsFrom(common)
-    getByName("developmentFabric").extendsFrom(common)
-
     "shadowBundle" {
         isCanBeResolved = true
         isCanBeConsumed = false
@@ -44,18 +30,16 @@ configurations {
 }
 
 dependencies {
-    modImplementation(libs.fabric.loader)
-    // modImplementation(libs.fabric.api)
+    minecraft(libs.minecraft)
 
-    common(project(":common", "namedElements")) { isTransitive = false }
-    shadowBundle(project(":common", "transformProductionFabric"))
-
-    shadowBundle(libs.night.config)
+    implementation(libs.fabric.loader)
     implementation(libs.night.config)
 
+    "shadowBundle"(libs.night.config)
+
     if (compatMods) {
-        modImplementation(libs.compat.modmenu.fabric)
-        modImplementation(libs.fabric.api)
+        implementation(libs.compat.modmenu.fabric)
+        implementation(libs.fabric.api)
     }
 }
 
@@ -76,7 +60,7 @@ sourceSets {
 }
 
 loom {
-    val awPath = commonProject.file("src/commonAssets/resources/${modId}.accesswidener")
+    val awPath = commonProject.file("src/assets/resources/${modId}.accesswidener")
     if (awPath.exists()) {
         accessWidenerPath.set(awPath)
     }
@@ -97,7 +81,7 @@ loom {
             inherit(getByName("client"))
             name("Data Generation")
             vmArg("-Dfabric-api.datagen")
-            vmArg("-Dfabric-api.datagen.output-dir=${commonProject.file("src/commonAssets/generated")}")
+            vmArg("-Dfabric-api.datagen.output-dir=${commonProject.file("src/assets/generated")}")
             vmArg("-Dfabric-api.datagen.modid=$modId")
 
             runDir("build/datagen")
@@ -132,19 +116,14 @@ loom {
 
 tasks.getByName<ShadowJar>("shadowJar") {
     configurations = listOf(shadowBundle)
-    archiveClassifier.set("dev-shadow")
-}
-
-tasks.withType<RemapJarTask>() {
-    inputFile.set(tasks.getByName<ShadowJar>("shadowJar").archiveFile)
-    dependsOn(tasks.getByName<ShadowJar>("shadowJar"))
+    archiveClassifier.set("")
 }
 
 if (withApiJar) {
     tasks.register<Jar>("apiJar") {
         archiveClassifier.set("api")
-        dependsOn(tasks.named("remapJar"))
-        from(zipTree(tasks.named("remapJar").get().outputs.files.asPath))
+        dependsOn(tasks.named("jar"))
+        from(zipTree(tasks.named("jar").get().outputs.files.asPath))
         include("fabric.mod.json")
         include("*.mixins.json")
         include("${modGroup.replace('.', '/')}/api/**")
@@ -170,13 +149,13 @@ if (System.getenv("MODRINTH_TOKEN") != null) {
         versionNumber.set(project.version.toString())
         versionName.set(project.version.toString() + " - " + project.name.uppercaseFirstChar())
         versionType.set(modrinthType)
-        uploadFile.set(tasks.named("remapJar"))
+        uploadFile.set(tasks.named("shadowJar"))
         additionalFiles.set(files.map { tasks.named(it) })
         syncBodyFrom.set(rootProject.file("README.md").readText())
         dependencies {
         }
         gameVersions.set(listOf(libs.versions.minecraft.get()))
-        loaders.set(listOf("fabric", "quilt"))
+        loaders.set(listOf("fabric"))
         detectLoaders.set(false)
         changelog.set(file("../CHANGELOG.md").readText())
     }
@@ -184,18 +163,47 @@ if (System.getenv("MODRINTH_TOKEN") != null) {
 }
 
 if (System.getenv("CURSEFORGE_TOKEN") != null) {
-    tasks.create<TaskPublishCurseForge>("curseforge") {
+    tasks.register<TaskPublishCurseForge>("curseforge") {
         apiToken = System.getenv("CURSEFORGE_TOKEN")
 
-        upload(1055905, tasks.named("remapJar")) {
+        upload(1055905, tasks.named("shadowJar")) {
             releaseType = modrinthType
             gameVersions.clear()
             addGameVersion(libs.versions.minecraft.get())
-            addModLoader("fabric", "quilt")
+            addModLoader("fabric")
             changelog = file("../CHANGELOG.md").readText()
             changelogType = "markdown"
         }
 
         disableVersionDetection()
+    }
+
+    tasks.named("curseforge") { dependsOn("runDatagen") }
+}
+
+// Implement mcgradleconventions loader attribute
+val loaderAttribute = Attribute.of("io.github.mcgradleconventions.loader", String::class.java)
+for (variant in arrayOf(
+    "apiElements",
+    "runtimeElements",
+    "sourcesElements",
+    "javadocElements",
+    "includeInternal",
+    "modCompileClasspath"
+)) {
+    configurations.named(variant) {
+        attributes {
+            attribute(loaderAttribute, "fabric")
+        }
+    }
+}
+
+sourceSets.configureEach {
+    for (variant in arrayOf(compileClasspathConfigurationName, runtimeClasspathConfigurationName)) {
+        configurations.named(variant) {
+            attributes {
+                attribute(loaderAttribute, "fabric")
+            }
+        }
     }
 }

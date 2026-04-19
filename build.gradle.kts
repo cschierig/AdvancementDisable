@@ -1,11 +1,9 @@
-import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import java.text.SimpleDateFormat
 import java.util.*
 
 plugins {
-    alias(libs.plugins.architectury.loom) apply false
-    alias(libs.plugins.architectury.plugin)
-    alias(libs.plugins.shadow) apply false
+    alias(libs.plugins.neoforge.moddev) apply false
+    alias(libs.plugins.fabric.loom) apply false
 }
 
 val modArchiveName: String by project
@@ -15,10 +13,6 @@ val modGroup: String by project
 val author: String by project
 val modVersion: String by project
 
-architectury {
-    minecraft = libs.versions.minecraft.get()
-}
-
 allprojects {
     val libs = rootProject.libs
     version = "${modVersion}+${libs.versions.minecraft.get()}"
@@ -27,20 +21,15 @@ allprojects {
 
 subprojects {
     val libs = rootProject.libs
-    apply(plugin = libs.plugins.architectury.loom.get().pluginId)
-    apply(plugin = libs.plugins.architectury.plugin.get().pluginId)
+    apply(plugin = "java-library")
     apply(plugin = "maven-publish")
-
-    val loom = project.extensions.getByName<LoomGradleExtensionAPI>("loom")
 
     configure<BasePluginExtension> {
         archivesName.set("${modArchiveName}-${project.name}")
     }
 
     repositories {
-        maven("https://maven.parchmentmc.org") {
-            name = "ParchmentMC"
-        }
+        mavenCentral()
         exclusiveContent {
             forRepository {
                 maven("https://api.modrinth.com/maven") {
@@ -51,23 +40,33 @@ subprojects {
                 includeGroup("maven.modrinth")
             }
         }
-        maven("https://maven.terraformersmc.com/") {
-            name = "TerraformersMC"
+        exclusiveContent {
+            forRepository {
+                maven("https://maven.terraformersmc.com/") {
+                    name = "TerraformersMC"
+                }
+            }
+            filter {
+                includeGroup("com.terraformersmc")
+            }
+        }
+        exclusiveContent {
+            forRepository {
+                maven("https://repo.spongepowered.org/repository/maven-public") {
+                    name = "Sponge"
+                }
+            }
+            filter { includeGroupAndSubgroups("org.spongepowered") }
+        }
+        maven("https://maven.blamejared.com") {
+            name = "BlameJared"
         }
     }
 
-    dependencies {
-        "minecraft"(libs.minecraft)
-        "mappings"(loom.layered {
-            officialMojangMappings()
-            // TODO: enable parchment for 1.21
-            // parchment("org.parchmentmc.data:parchment-${libs.versions.minecraft.get()}:${libs.versions.parchment.get()}@zip")
-        })
-    }
-
     configure<JavaPluginExtension> {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        toolchain.languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get()))
+        sourceCompatibility = JavaVersion.VERSION_25
+        targetCompatibility = JavaVersion.VERSION_25
 
         withSourcesJar()
         withJavadocJar()
@@ -75,7 +74,7 @@ subprojects {
 
     tasks.withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"
-        options.release.set(21)
+        options.release.set(25)
     }
 
     tasks.withType<Jar>().configureEach {
@@ -104,11 +103,15 @@ subprojects {
     }
 
     tasks.withType<ProcessResources> {
-        gradle.projectsEvaluated {
-            from(project(":common").extensions.getByType(SourceSetContainer::class).getByName("commonAssets").resources)
-        }
+        val versions = mapOf(
+            "version_fabricloader" to rootProject.libs.versions.fabric.loader.get(),
+            "version_minecraft" to rootProject.libs.versions.minecraft.get(),
+            "version_java" to rootProject.libs.versions.java.get()
+        )
+
         filesMatching(listOf("pack.mcmeta", "fabric.mod.json", "META-INF/neoforge.mods.toml", "*.mixins.json")) {
             expand(project.properties)
+            expand(versions)
         }
     }
 }
@@ -122,5 +125,5 @@ tasks.register("release") {
 tasks.register("releaseCurseforge") {
     dependsOn(project("fabric").tasks.named("curseforge").get())
     dependsOn(project("neoforge").tasks.named("curseforge").get())
-    //dependsOn(project("fabric").tasks.named("curseforgeSyncBody").get())
+    dependsOn(project("fabric").tasks.named("curseforgeSyncBody").get())
 }

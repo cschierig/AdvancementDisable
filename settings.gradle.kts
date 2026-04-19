@@ -1,18 +1,20 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
-        maven("https://maven.fabricmc.net/") {
-            name = "Fabric"
-        }
-        maven("https://maven.neoforged.net/releases") {
-            name = "Neoforge"
-        }
-        maven("https://maven.architectury.dev/") {
-            name = "Architectury"
+        mavenCentral()
+        exclusiveContent {
+            forRepository {
+                maven("https://maven.fabricmc.net/") {
+                    name = "Fabric"
+                }
+            }
+            filter {
+                includeGroupAndSubgroups("net.fabricmc")
+            }
         }
     }
 }
 
-val modArchiveName: String by extra
-rootProject.name = modArchiveName
+val modName: String by extra
+rootProject.name = modName
 include("common", "fabric", "neoforge")

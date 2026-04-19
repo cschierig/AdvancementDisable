@@ -1,42 +1,63 @@
+plugins {
+    alias(libs.plugins.neoforge.moddev)
+}
+
 val modId: String by project
 val enabledPlatforms: String by project
 
-architectury {
-    common(enabledPlatforms.split(','))
-}
-
-loom {
-    val awFile = file("src/commonAssets/resources/${modId}.accesswidener")
-    if (awFile.exists()) {
-        accessWidenerPath.set(awFile)
-    }
-
-    addRemapConfiguration("testModImplementation") {
-        targetConfigurationName.set("test")
-        onCompileClasspath = true
-        onRuntimeClasspath = true
+neoForge {
+    neoFormVersion = libs.versions.neoforge.neoform.get()
+    // Automatically enable AccessTransformers if the file exists
+    val atFile = file("src/main/resources/META-INF/accesstransformer.cfg")
+    if (atFile.exists()) {
+        accessTransformers.from(atFile)
     }
 }
 
 dependencies {
-    modImplementation(libs.fabric.loader)
-
-    "testModImplementation"(libs.fabric.loader)
-    testImplementation(libs.fabric.loader.junit)
+    compileOnly(libs.mixin)
+    compileOnly(libs.mixinextras.common)
+    annotationProcessor(libs.mixinextras.common)
 
     compileOnly(libs.night.config)
 }
 
-sourceSets {
-    create("commonAssets") {
-        resources {
-            srcDir(file("src/commonAssets/generated"))
-            exclude("src/commonAssets/generated/.cache")
+configurations {
+    create("commonJava") {
+        isCanBeResolved = false
+        isCanBeConsumed = true
+    }
+    create("commonResources") {
+        isCanBeResolved = false
+        isCanBeConsumed = true
+    }
+}
+
+artifacts {
+    add("commonJava", sourceSets.main.get().java.sourceDirectories.singleFile)
+    add("commonResources", sourceSets.main.get().resources.sourceDirectories.singleFile)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+}
+
+// Implement mcgradleconventions loader attribute
+val loaderAttribute = Attribute.of("io.github.mcgradleconventions.loader", String::class.java)
+for (variant in arrayOf("apiElements", "runtimeElements", "sourcesElements", "javadocElements")) {
+    configurations.named(variant) {
+        attributes {
+            attribute(loaderAttribute, "common")
         }
     }
 }
 
-
-tasks.withType<Test> {
-    useJUnitPlatform()
+sourceSets.configureEach {
+    for (variant in arrayOf(compileClasspathConfigurationName, runtimeClasspathConfigurationName)) {
+        configurations.named(variant) {
+            attributes {
+                attribute(loaderAttribute, "common")
+            }
+        }
+    }
 }

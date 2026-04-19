@@ -2,7 +2,7 @@ package com.carlschierig.advancementdisable.mixin;
 
 import com.carlschierig.advancementdisable.AdvancementDisable;
 import com.google.gson.JsonElement;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.ServerAdvancementManager;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -20,7 +20,7 @@ public class AdvancementManagerMixin {
 		method = "apply(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V",
 		at = @At("HEAD")
 	)
-	void preventAdvancementAddition(Map<ResourceLocation, JsonElement> map, ResourceManager resourceManager, ProfilerFiller profilerFiller, CallbackInfo ci) {
+	void preventAdvancementAddition(Map<Identifier, JsonElement> map, ResourceManager resourceManager, ProfilerFiller profilerFiller, CallbackInfo ci) {
 		var disabledMods = AdvancementDisable.DISABLED_MODS;
 
 		map.entrySet().removeIf((entry) -> disabledMods.contains(entry.getKey().getNamespace()));

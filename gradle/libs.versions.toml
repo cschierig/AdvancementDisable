@@ -1,20 +1,24 @@
 [versions]
-minecraft = "1.21.4"
+minecraft = "26.1.2"
+java = "25"
 
 minotaur = "2.+"
 curseforgegradle = "1.1.+"
-parchment = "2025.01.19"
 
-fabric_loader = "0.15.+"
-fabric_api = "0.116.0+1.21.4"
+fabric_loader = "0.19.2"
+fabric_loom = "1.15.5"
+fabric_api = "0.146.1+26.1.2"
 
-neoforge_mdk = "21.4.+"
+neoforge_mdk = "26.1.2.15-beta"
+neoforge_moddev = "2.0.141"
+neoforge_neoform = "26.1.2-1"
 
-architectury_loom = "1.9-SNAPSHOT"
-architectury_plugin = "3.4-SNAPSHOT"
-shadow = "8.1.1"
+mixin = "0.8.5"
+mixinextras = "0.5.3"
 
 junit = "5.10.+"
+
+shadow = "9.4.1"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
@@ -25,17 +29,22 @@ fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fab
 
 neoforge_mdk = { module = "net.neoforged:neoforge", version.ref = "neoforge_mdk" }
 
+mixin = { module = "org.spongepowered:mixin", version.ref = "mixin" }
+mixinextras_common = { module = "io.github.llamalad7:mixinextras-common", version.ref = "mixinextras" }
+
 junit_jupiter_api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit_jupiter_engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 
-compat_modmenu_fabric = { module = "com.terraformersmc:modmenu", version = "11.0.0" }
+compat_modmenu_fabric = { module = "com.terraformersmc:modmenu", version = "18.0.0-alpha.8" }
 
-night_config = { module = "com.electronwill.night-config:toml", version = "3.8.1" }
+night_config = { module = "com.electronwill.night-config:toml", version = "3.8.4" }
 
 [plugins]
 minotaur = { id = "com.modrinth.minotaur", version.ref = "minotaur" }
 curseforgegradle = { id = "net.darkhax.curseforgegradle", version.ref = "curseforgegradle" }
 
-architectury_loom = { id = "dev.architectury.loom", version.ref = "architectury_loom" }
-architectury_plugin = { id = "architectury-plugin", version.ref = "architectury_plugin" }
-shadow = { id = 'com.github.johnrengelman.shadow', version.ref = "shadow" }
+fabric_loom = { id = "net.fabricmc.fabric-loom", version.ref = "fabric_loom" }
+
+neoforge_moddev = { id = "net.neoforged.moddev", version.ref = "neoforge_moddev" }
+
+shadow = { id = 'com.gradleup.shadow', version.ref = "shadow" }

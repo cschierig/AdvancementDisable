@@ -1,1 +1,2 @@
-- update bundled night config, fix error with night config 3.8.0
+- update to Minecraft 26.1.2
+- update bundled night config to 3.8.4
