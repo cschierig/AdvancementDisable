@@ -112,6 +112,12 @@ subprojects {
         filesMatching(listOf("pack.mcmeta", "fabric.mod.json", "META-INF/neoforge.mods.toml", "*.mixins.json")) {
             expand(project.properties + versions)
         }
+
+        dependsOn("deleteBuildResources")
+    }
+
+    tasks.register("deleteBuildResources", Delete::class) {
+        delete("build/resources")
     }
 }
 
@@ -124,5 +130,4 @@ tasks.register("release") {
 tasks.register("releaseCurseforge") {
     dependsOn(project("fabric").tasks.named("curseforge").get())
     dependsOn(project("neoforge").tasks.named("curseforge").get())
-    dependsOn(project("fabric").tasks.named("curseforgeSyncBody").get())
 }
