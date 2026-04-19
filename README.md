@@ -8,7 +8,9 @@ The mod removes all advancements in the namespaces configured in the config.
 
 ```toml
 disabledMods = [
-    "minecraft" # remove all minecraft advancements
+    "minecraft", # remove all minecraft advancements
+    "mine.*", # remove advancements from all mods starting with mine
+    ".*" # remove all advancements
 ]
 ```
 

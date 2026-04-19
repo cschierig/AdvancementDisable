@@ -23,11 +23,11 @@ dependencies {
 }
 
 configurations {
-    create("commonJava") {
+    register("commonJava") {
         isCanBeResolved = false
         isCanBeConsumed = true
     }
-    create("commonResources") {
+    register("commonResources") {
         isCanBeResolved = false
         isCanBeConsumed = true
     }

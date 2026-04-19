@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @Mixin(ServerAdvancementManager.class)
 public class AdvancementManagerMixin {
@@ -20,9 +21,12 @@ public class AdvancementManagerMixin {
 		method = "apply(Ljava/util/Map;Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)V",
 		at = @At("HEAD")
 	)
-	void preventAdvancementAddition(Map<Identifier, JsonElement> map, ResourceManager resourceManager, ProfilerFiller profilerFiller, CallbackInfo ci) {
+	void preventAdvancementAddition(Map<Identifier, JsonElement> preparations, ResourceManager manager, ProfilerFiller profiler, CallbackInfo ci) {
 		var disabledMods = AdvancementDisable.DISABLED_MODS;
 
-		map.entrySet().removeIf((entry) -> disabledMods.contains(entry.getKey().getNamespace()));
+		var patterns = disabledMods.stream().map(Pattern::compile).toList();
+
+		preparations.entrySet()
+			.removeIf((entry) -> patterns.stream().anyMatch(p -> p.matcher(entry.getKey().getNamespace()).matches()));
 	}
 }

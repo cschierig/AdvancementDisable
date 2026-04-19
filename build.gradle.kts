@@ -110,8 +110,7 @@ subprojects {
         )
 
         filesMatching(listOf("pack.mcmeta", "fabric.mod.json", "META-INF/neoforge.mods.toml", "*.mixins.json")) {
-            expand(project.properties)
-            expand(versions)
+            expand(project.properties + versions)
         }
     }
 }
