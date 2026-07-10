@@ -1,3 +1,1 @@
-- update to Minecraft 26.1.2
-- update bundled night config to 3.8.4
-- namespace are now regexes, enabling you to disable multiple or all mods at once
+- Fix disabling individual advancements not working

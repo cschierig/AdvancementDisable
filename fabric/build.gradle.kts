@@ -17,6 +17,7 @@ val withSourcesJar = property("withSourcesJar").toString().toBoolean()
 val compatMods = property("compatMods").toString().toBoolean()
 val modrinthId: String by project
 val modrinthType: String by project
+val curseforgeId: String by project
 val withExampleMod = property("withExampleMod").toString().toBoolean()
 
 val commonProject = project(":common")
@@ -81,7 +82,7 @@ loom {
             inherit(getByName("client"))
             name("Data Generation")
             vmArg("-Dfabric-api.datagen")
-            vmArg("-Dfabric-api.datagen.output-dir=${commonProject.file("src/assets/generated")}")
+            vmArg("-Dfabric-api.datagen.output-dir=${commonProject.file("src/main/assets/generated")}")
             vmArg("-Dfabric-api.datagen.modid=$modId")
 
             runDir("build/datagen")
@@ -166,7 +167,7 @@ if (System.getenv("CURSEFORGE_TOKEN") != null) {
     tasks.register<TaskPublishCurseForge>("curseforge") {
         apiToken = System.getenv("CURSEFORGE_TOKEN")
 
-        upload(1055905, tasks.named("shadowJar")) {
+        upload(curseforgeId, tasks.named("shadowJar")) {
             releaseType = modrinthType
             gameVersions.clear()
             addGameVersion(libs.versions.minecraft.get())

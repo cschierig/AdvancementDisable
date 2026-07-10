@@ -27,6 +27,6 @@ public class AdvancementManagerMixin {
 		var patterns = disabledMods.stream().map(Pattern::compile).toList();
 
 		preparations.entrySet()
-			.removeIf((entry) -> patterns.stream().anyMatch(p -> p.matcher(entry.getKey().getNamespace()).matches()));
+			.removeIf((entry) -> patterns.stream().anyMatch(p -> p.matcher(entry.getKey().toString()).matches()));
 	}
 }
